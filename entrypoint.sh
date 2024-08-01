@@ -4,11 +4,15 @@ set -o nounset
 set -o pipefail
 
 initialize() {
+  normalize-network-id
   config-servers
   start-dnsmasq
-  normalize-network-id
   initialize-host-files
   monitor-system-event
+}
+
+normalize-network-id() {
+  DOCKER_NETWORK_ID=$(docker network inspect $DOCKER_NETWORK_ID | jq --raw-output '.[].Name')
 }
 
 config-servers() {
@@ -23,15 +27,16 @@ config-servers() {
 }
 
 start-dnsmasq() {
+  local gateway=$(find-gateway)
   /usr/sbin/dnsmasq \
     --conf-dir=$CONF_DIR \
     --hostsdir=$HOSTSDIR \
     --domain=$DOMAIN_NAME \
-    --local=/$DOMAIN_NAME/
+    --local=/$DOMAIN_NAME/$gateway
 }
 
-normalize-network-id() {
-  DOCKER_NETWORK_ID=$(docker network inspect $DOCKER_NETWORK_ID | jq --raw-output '.[].Name')
+find-gateway() {
+  docker network inspect $DOCKER_NETWORK_ID | jq --raw-output '.[].IPAM.Config[0].Gateway'
 }
 
 initialize-host-files() {
