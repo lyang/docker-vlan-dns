@@ -61,7 +61,7 @@ update-host-file() {
 }
 
 find-container-ip() {
-  docker container inspect $1 | jq --raw-output ".[].NetworkSettings.Networks.$DOCKER_NETWORK_ID.IPAddress"
+  docker container inspect $1 | jq --raw-output ".[].NetworkSettings.Networks.\"$DOCKER_NETWORK_ID\".IPAddress"
 }
 
 find-container-name() {
