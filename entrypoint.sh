@@ -57,10 +57,12 @@ update-host-file() {
   local name=$(find-container-name $1)
   local hostname=$(find-container-hostname $1)
   local service=$(find-service-name $1)
-  local entry="$ip $name\n$ip $hostname\n"
+  local entry=""
   if [ -n "$service" ]; then
     entry+="$ip $service\n"
   fi
+  entry+="$ip $name\n"
+  entry+="$ip $hostname\n"
   printf "Adding entries for $name:\n$entry"
   printf "$entry" > $file
 }
