@@ -109,7 +109,7 @@ handle-event() {
 remove-host-file() {
   local file="$HOSTSDIR/$1"
   echo "Deleting $file"
-  rm $file
+  rm -rf $file
 }
 
 initialize
