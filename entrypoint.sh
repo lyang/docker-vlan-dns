@@ -28,15 +28,21 @@ config-servers() {
 
 start-dnsmasq() {
   local gateway=$(find-gateway)
+  local subnet=$(find-subnet)
   /usr/sbin/dnsmasq \
     --conf-dir=$CONF_DIR \
     --hostsdir=$HOSTSDIR \
     --domain=$DOMAIN_NAME \
-    --local=/$DOMAIN_NAME/$gateway
+    --local=/$DOMAIN_NAME/$gateway \
+    --rev-server="$subnet,$gateway"
 }
 
 find-gateway() {
   docker network inspect $DOCKER_NETWORK_ID | jq --raw-output '.[].IPAM.Config[0].Gateway'
+}
+
+find-subnet() {
+  docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' "$DOCKER_NETWORK_ID"
 }
 
 initialize-host-files() {
