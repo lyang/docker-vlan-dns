@@ -42,7 +42,7 @@ find-gateway() {
 }
 
 find-subnet() {
-  docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' "$DOCKER_NETWORK_ID"
+  docker network inspect $DOCKER_NETWORK_ID | jq --raw-output '.[].IPAM.Config[0].Subnet'
 }
 
 initialize-host-files() {
